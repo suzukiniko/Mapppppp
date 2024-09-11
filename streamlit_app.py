@@ -1,31 +1,29 @@
-# Streamlitライブラリをインポート
 import streamlit as st
+import folium
+from folium import Customlcon
 
-# ページ設定（タブに表示されるタイトル、表示幅）
-st.set_page_config(page_title="タイトル", layout="wide")
+#タイトルの設定
+st.title('宮河内ハイランドハザードマップ')
 
-# タイトルを設定
-st.title('Streamlitのサンプルアプリ')
+#座標の設定
+coordinates ={
+    '立入禁止区域':[33.187231, 131.697546],
+    '立入禁止区域':[33.188263, 131.700003],
+    '遊水池':[33.190565, 131.703447],
+    '立入禁止区域':[33.190260, 131.706448],
+    '立入禁止区域':[33.193352, 131.700786],
+    ''
+}
 
-# テキスト入力ボックスを作成し、ユーザーからの入力を受け取る
-user_input = st.text_input('あなたの名前を入力してください')
+#Foliumマッププロジェクトの作成
+m = folium.Map(location=[33.189665, 131.703049],zoom_start=15)
 
-# ボタンを作成し、クリックされたらメッセージを表示
-if st.button('挨拶する'):
-    if user_input:  # 名前が入力されているかチェック
-        st.success(f'🌟 こんにちは、{user_input}さん! 🌟')  # メッセージをハイライト
-    else:
-        st.error('名前を入力してください。')  # エラーメッセージを表示
+#マーカーの設置
+for location, coord in coordinates.items():
+    folium.Marker(location=coord,popup=location).add_to(m)
 
-# スライダーを作成し、値を選択
-number = st.slider('好きな数字（10進数）を選んでください', 0, 100)
+#ForiumマップをHTMLとして取得
+map_html = m._repr_html_()
 
-# 補足メッセージ
-st.caption("十字キー（左右）でも調整できます。")
-
-# 選択した数字を表示
-st.write(f'あなたが選んだ数字は「{number}」です。')
-
-# 選択した数値を2進数に変換
-binary_representation = bin(number)[2:]  # 'bin'関数で2進数に変換し、先頭の'0b'を取り除く
-st.info(f'🔢 10進数の「{number}」を2進数で表現すると「{binary_representation}」になります。 🔢')  # 2進数の表示をハイライト
+#streamlitでマップを表示
+st.components.v1.html(map_html, height=500, width=500)
